@@ -104,23 +104,23 @@ otus_hw1=#
 4. Работа с транзакциями PostgreSQL
 Создаем таблицу и заполняем данными
 ```bash
-otus_hw1=# create table customer (id serial, name varchar(150), cur_amt int);
+otus_hw1=# create table pokupatel (id serial, name varchar(150), cur_amt int);
 CREATE TABLE
-otus_hw1=# insert into customer (name,cur_amt) values ('Ivanova Elena',1500);
+otus_hw1=# insert into pokupatel (name,cur_amt) values ('Ivanov',1000);
 INSERT 0 1
-otus_hw1=# insert into customer (name,cur_amt) values ('Petrov Ivan',2500);
+otus_hw1=# insert into pokupatel (name,cur_amt) values ('Petrov',2000);
 INSERT 0 1
-otus_hw1=# insert into customer (name,cur_amt) values ('Sova Anna',3000);
+otus_hw1=# insert into pokupatel (name,cur_amt) values ('Sidorov',3000);
 INSERT 0 1
 ```
 Результат:
 ```bash
-otus_hw1=# select * from customer;
+otus_hw1=# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  1 | Ivanova Elena |    1500
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
+  1 | Ivanov |    1000
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
 (3 rows)
 ```
 
@@ -142,12 +142,12 @@ otus_hw1=# SHOW TRANSACTION ISOLATION LEVEL;
 ```bash
 otus_hw1=# begin;
 BEGIN
-otus_hw1=*# select * from customer;
+otus_hw1=*# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  1 | Ivanova Elena |    1500
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
+  1 | Ivanov |    1000
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
 (3 rows)
 
 otus_hw1=*#
@@ -156,14 +156,14 @@ otus_hw1=*#
 ```bash
 otus_hw1=# begin;
 BEGIN
-otus_hw1=*# update customer set cur_amt = 5000 where id = 1;
+otus_hw1=*# update pokupatel set cur_amt = 5000 where id = 1;
 UPDATE 1
-otus_hw1=*# select * from customer;
+otus_hw1=*# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
 (3 rows)
 ```
 Результат:
@@ -172,24 +172,24 @@ otus_hw1=*# select * from customer;
 ```
 В первой сессии (консоль 1) данные не изменились
 ```bash
-otus_hw1=*# select * from customer;
+otus_hw1=*# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    4500
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    1000
 (3 rows)
 ```
 - Завершаем транзакцию в консоли 2
 ```bash
 otus_hw1=*# commit;
 COMMIT
-otus_hw1=# select * from customer;
+otus_hw1=# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
 (3 rows)
 
 otus_hw1=#
@@ -198,12 +198,12 @@ otus_hw1=#
 ```bash
 otus_hw1=*# commit;
 COMMIT
-otus_hw1=# select * from customer;
+otus_hw1=# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
 (3 rows)
 
 otus_hw1=#
@@ -228,15 +228,15 @@ otus_hw1=*# show transaction isolation level;
 ```
 - В консоли 1 добавляем новую запись в таблицу:
 ```bash
-otus_hw1=*# insert into customer (name, cur_amt) values ('Novikova Anna',4400);
+otus_hw1=*# insert into pokupatel (name, cur_amt) values ('Smirnov',4000);
 INSERT 0 1
-otus_hw1=*# select * from customer;
+otus_hw1=*# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
-  4 | Novikova Anna |    4400
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
+  4 | Smirnov |    4000
 (4 rows)
 ```
 Результат:
@@ -245,12 +245,12 @@ otus_hw1=*# select * from customer;
 ```
 - В консоли 2 выполняем запрос к таблице:
 ```bash
-otus_hw1=*# select * from customer;
+otus_hw1=*# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
 (3 rows)
 ```
 Результат:
@@ -261,23 +261,23 @@ otus_hw1=*# select * from customer;
 ```bash
 otus_hw1=*# commit;
 COMMIT
-otus_hw1=# select * from customer;
+otus_hw1=# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
-  4 | Novikova Anna |    4400
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
+  4 | Smirnov |    4000
 (4 rows)
 ```
 - Теперь снова в консоли 2 повторяем запрос к таблице:
 ```bash
-otus_hw1=*# select * from customer;
+otus_hw1=*# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
 (3 rows)
 ```
 Результат:
@@ -288,13 +288,13 @@ otus_hw1=*# select * from customer;
 ```bash
 otus_hw1=*# commit;
 COMMIT
-otus_hw1=# select * from customer;
+otus_hw1=# select * from pokupatel;
  id |     name      | cur_amt
 ----+---------------+---------
-  2 | Petrov Ivan   |    2500
-  3 | Sova Anna     |    3000
-  1 | Ivanova Elena |    5000
-  4 | Novikova Anna |    4400
+  2 | Petrov   |    2000
+  3 | Sidorov     |    3000
+  1 | Ivanov |    5000
+  4 | Smirnov |    4000
 (4 rows)
 
 otus_hw1=#
