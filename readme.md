@@ -91,5 +91,33 @@ root@compute-vm-2-2-10-ssd-1747659187297:~# su postgres -c 'psql -c "select * fr
  10 | sugar        |      400 | USA
 (10 rows)
 ```
-
 Вывод: использование внешнего диска — это способ увеличить объём хранилища и обеспечить отказоустойчивость.
+
+Работа над ошибками
+Для того, чтобы диск автоматически примонтировался при перезапуске ВМ, после команд mkfs.ext4 и mount, добавил в файл /etc/fstab запись о новом диске:
+```
+root@compute-vm-2-2-10-ssd-1747659187297:~# blkid /dev/vdb
+/dev/vdb: UUID="6c84fed5-3d74-4939-88cc-f81ce7c9e1ba" BLOCK_SIZE="4096" TYPE="ext4"
+root@compute-vm-2-2-10-ssd-1747659187297:~#nano /etc/fstab
+
+GNU nano 7.2	/etc/fstab *
+LABEL=cloudimg-rootfs / ext4 discard,commit=30,errors=remount-ro 0 1
+LABEL=UEFI /boot/efi vfat umask=0077 0 1
+UUID=6c84fed5-3d74-4939-88cc-f81ce7c9e1ba /mnt/pg-data ext4 defaults 0 2
+```
+
+Перезагружаем ВМ и проверяем
+```
+root@compute-vm-2-2-10-ssd-1747659187297:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            969M     0  969M   0% /dev
+tmpfs           198M  1.1M  197M   1% /run
+/dev/vda1       9.1G  2.1G  7.0G  24% /
+tmpfs           986M  1.1M  985M   1% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           986M     0  986M   0% /sys/fs/cgroup
+/dev/vda15      599M  6.1M  593M   2% /boot/efi
+tmpfs           198M     0  198M   0% /run/user/1000
+/dev/vdb        974M   24K  907M   1% /mnt/pg-data
+root@compute-vm-2-2-10-ssd-1747659187297:~# 
+```
